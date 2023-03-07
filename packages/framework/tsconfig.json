@@ -1,0 +1,53 @@
+{
+  "compilerOptions": {
+    "isolatedModules": false,
+    "noImplicitAny": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUnusedParameters": false,
+    "target": "es2020",
+    "allowJs": false,
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "alwaysStrict": true,
+    "declaration": true,
+    "disableSizeLimit": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "importsNotUsedAsValues": "error",
+    "inlineSourceMap": false,
+    "inlineSources": false,
+
+    "jsx": "react",
+    "lib": ["dom", "esnext"],
+    "module": "es2020",
+    "moduleResolution": "node",
+    "newLine": "lf",
+    "noEmitOnError": false,
+
+    "noUnusedLocals": false,
+
+    "outDir": "dist",
+    "preserveValueImports": true,
+    "pretty": true,
+    "resolveJsonModule": true,
+    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
+    "sourceMap": false,
+    // "strict": true,
+    "strict": false,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+
+    "useDefineForClassFields": false,
+    "useUnknownInCatchVariables": true,
+    "noUncheckedIndexedAccess": false,
+    "paths": {
+      "~": ["./src"],
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

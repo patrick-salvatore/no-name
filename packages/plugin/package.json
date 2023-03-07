@@ -1,0 +1,35 @@
+{
+  "name": "@lnl/plugin",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "clean": "tsex clean",
+    "build": "rm -rf ./dist && tsc",
+    "build:watch": "tsc --watch",
+    "prepublishOnly": "npm run clean && npm run compile"
+  },
+  "devDependencies": {
+    "@babel/plugin-syntax-jsx": "^7.18.6",
+    "@babel/plugin-transform-typescript": "^7.20.2",
+    "@babel/preset-env": "^7.20.2",
+    "@rollup/plugin-alias": "^4.0.3",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-commonjs": "^23.0.4",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@types/node": "^18.11.12",
+    "babel-plugin-transform-rename-import": "^2.3.0",
+    "typescript": "^4.9.5",
+    "vite": "^4.1.4"
+  },
+  "dependencies": {
+    "@babel/core": "^7.20.5",
+    "@babel/preset-typescript": "^7.18.6",
+    "@types/babel__core": "^7.1.20",
+    "babel-preset-solid": "^1.6.3"
+  },
+  "author": "",
+  "description": ""
+}
