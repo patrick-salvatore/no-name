@@ -1,6 +1,6 @@
 import wrapElement from "~/render_model/methods/wrap_element";
 import { createHtmlNode } from "~/render_model/utils/creators";
-import { setProps } from "~/render_model/setters";
+import { setProps } from "~/render_model/utils/setters";
 import { isFunction, isNil, isString, isNode, isVoidChild } from "~/render_model/utils";
 import type { Child, Component, Props } from "~/render_model/types";
 

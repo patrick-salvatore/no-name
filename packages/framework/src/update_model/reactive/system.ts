@@ -1,4 +1,4 @@
-import type { Dispose, Signal, Scope, Callable, SignalOptions, ComputationNode, MaybeDisposable } from "./types";
+import type { Dispose, Scope, Callable, SignalOptions, ComputationNode, MaybeDisposable } from "./types";
 
 let scheduledEffects = false,
   runningEffects = false,
@@ -25,6 +25,10 @@ function flushEffects() {
   queueMicrotask(runEffects);
 }
 
+function unwrap<T>(fn: T): T extends () => any ? ReturnType<T> : T {
+  return isFunction(fn) ? fn() : fn;
+}
+
 function runEffects() {
   if (!effects.length) {
     scheduledEffects = false;
@@ -49,6 +53,10 @@ function isFunction(fnOrValue: unknown): fnOrValue is Function {
 
 function referenceEquality<T>(_old: T, _new: T) {
   return _old === _new;
+}
+
+function isNotEqual(a: unknown, b: unknown) {
+  return a !== b;
 }
 
 function isZombie(node: Scope) {
@@ -332,7 +340,7 @@ function dispose(this: Scope, self = true) {
   scopes = [];
 }
 
-function compute<T>(scope: Scope, fn: Callable<Scope | null, T>, observer: ComputationNode<T> | null): T {
+function compute<T>(scope: Scope | null, fn: Callable<Scope | null, T>, observer: ComputationNode<T> | null): T {
   let prevScope = currentScope,
     prevObserver = currentObserver;
 
@@ -369,6 +377,15 @@ ScopeProto.append = function appendScope(scope: Scope) {
   this._nextSibling = scope;
 };
 
+export function scoped<T>(run: () => T, scope: Scope | null): T | undefined {
+  try {
+    return compute<T>(scope, run, null);
+  } catch (error) {
+    handleError(scope, error);
+    return; // TS -_-
+  }
+}
+
 function createScope(): Scope {
   return new Scope();
 }
@@ -390,7 +407,7 @@ const Computation = function ComputationNode(this: ComputationNode, initialValue
 
 const ComputeProto: ComputationNode = Computation.prototype;
 Object.setPrototypeOf(ComputeProto, ScopeProto);
-ComputeProto._changed = referenceEquality;
+ComputeProto._changed = isNotEqual;
 ComputeProto.call = read;
 
 function createComputation<T>(initialValue: any, compute: (() => T) | null, options?: SignalOptions<T>): ComputationNode {
@@ -398,7 +415,7 @@ function createComputation<T>(initialValue: any, compute: (() => T) | null, opti
 }
 
 // Other
-export { $TRACKING, $SIGNAL, $EFFECT, SCOPE, isFunction, referenceEquality, read, write };
+export { $TRACKING, $SIGNAL, $EFFECT, SCOPE, unwrap, isFunction, referenceEquality, isNotEqual, read, write };
 
 // Library
-export { createComputation, root, dispose, onDispose, untrack };
+export { createComputation, root, dispose, onDispose, untrack, compute, createScope };

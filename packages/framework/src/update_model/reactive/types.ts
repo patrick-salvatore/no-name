@@ -36,11 +36,11 @@ type Func<T> = () => T;
 
 type ReadSignal<T> = {
   (): T;
-  /** only available during dev. */
+
   node?: ComputationNode;
 };
+
 type WriteSignal<T> = {
-  /** only available during dev. */
   node?: ComputationNode;
   set: (value: T | NextValue<T>) => T;
 } & ReadSignal<T>;
@@ -106,7 +106,9 @@ export {
   Disposable,
   EqualityCheck,
   Func,
+  Maybe,
   MaybeDisposable,
+  ReadSignal,
   Scope,
   SignalList,
   SignalOptions,

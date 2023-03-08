@@ -8,8 +8,9 @@ function jsxPlugin(): Plugin {
     config: () => {
       return {
         esbuild: {
-          jsxInject: `import {createElement as $$jsx} from '@lnl/framework';\n`,
+          jsxInject: `import {createElement as $$jsx, Fragment as $$frag} from '@lnl/framework';\n`,
           jsxFactory: "$$jsx",
+          jsxFragment: "$$frag",
         },
       };
     },

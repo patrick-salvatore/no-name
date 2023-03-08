@@ -1,10 +1,11 @@
-import type { FunctionMaybe } from "~/render_model/types";
+import type { Cash, FunctionMaybe } from "~/render_model/types";
 import { isArray, isFunction } from "~/render_model/utils";
 
 import { effect } from "~/update_model";
 import { $SIGNAL, $TRACKING } from "~/update_model/reactive/system";
 
-import { createText } from "./utils/creators";
+import { SYMBOL_UNCACHED } from "../constants";
+import { createText } from "./creators";
 
 const resolveArrays = (() => {
   const RESOLVED = [];
@@ -65,6 +66,9 @@ const resolveChild = <T>(value: FunctionMaybe<T>, setter: Setter<T>, _dynamic: b
     }
   } else if (isArray(value)) {
     const [values, isDynamic] = resolveArrays(value);
+
+    values[SYMBOL_UNCACHED] = value[SYMBOL_UNCACHED];
+
     setter(values, isDynamic || _dynamic);
   } else {
     setter(value, _dynamic);

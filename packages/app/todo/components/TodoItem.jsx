@@ -1,7 +1,6 @@
 import TodoTextInput from "./TodoTextInput";
 
-const TodoItem = ({ todo }) => {
-  const editing = false // TODO STATE
+const TodoItem = (props) => {
 
   const handleDoubleClick = () => { };
 
@@ -14,26 +13,26 @@ const TodoItem = ({ todo }) => {
   return (
     <li
       class={{
-        completed: todo.completed,
-        editing: editing
+        completed: props.todo.completed,
+        editing: props.todo.editing
       }}
     >
-      {editing ? (
+      {props.todo.editing ? (
         <TodoTextInput
-          text={todo.text}
-          editing={editing}
-          onSave={text => handleSave(todo.id, text)}
+          text={props.todo.text}
+          editing={props.todo.editing}
+          onSave={text => handleSave(props.todo.id, text)}
         />
       ) : (
         <div class="view">
           <input
             class="toggle"
             type="checkbox"
-            checked={todo.completed}
-            onChange={() => completeTodo(todo)}
+            checked={props.todo.completed}
+            onChange={() => completeTodo(props.todo)}
           />
-          <label onDoubleClick={handleDoubleClick}>{todo.text}</label>
-          <button class="destroy" onClick={() => deleteTodo(todo.id)} />
+          <label onDoubleClick={handleDoubleClick}>{props.todo.text}</label>
+          <button class="destroy" onClick={() => deleteTodo(props.todo.id)} />
         </div>
       )}
     </li>

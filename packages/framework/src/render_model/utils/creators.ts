@@ -4,4 +4,6 @@ const createHtmlNode: Func<[ComponentIntrinsicElement], HTMLElement> = document.
 
 const createText: Func<[any], Text> = document.createTextNode.bind(document);
 
-export { createHtmlNode, createText };
+const createComment: Func<[], Comment> = document.createComment.bind ( document, '' );
+
+export { createComment, createHtmlNode, createText };

@@ -1,6 +1,6 @@
 import type { Child } from "~/render_model/types";
 
-import { setChildren } from "~/render_model/setters";
+import { setChildren } from "~/render_model/utils/setters";
 
 import { root } from "~/update_model/reactive";
 

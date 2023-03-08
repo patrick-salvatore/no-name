@@ -1,24 +1,37 @@
-const TodoTextInput = ({ editing, newTodo, placeholder }) => {
+import { addTodo } from '../store'
 
-  const handleSubmit = e => { }
+const UUID = () => {
+  let result = ''
+  const characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  for (let i = 0; i < 12; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
+}
 
-  const handleChange = e => { }
-
-  const handleBlur = e => { }
-
+const TodoTextInput = (props) => {
   return (
     <input
       class={{
-        edit: editing,
-        'new-todo': newTodo
+        edit: props.editing,
+        'new-todo': props.newTodo
       }}
       type="text"
-      placeholder={placeholder}
+      placeholder={props.placeholder}
       autoFocus="true"
       value={''}
-      onBlur={handleBlur}
-      onChange={handleChange}
-      onKeyDown={handleSubmit}
+      onKeyPress={function _(e) {
+        if (e.key === 'Enter' && e.target.value.trim().length > 0) {
+          addTodo({
+            bodyText: e.target.value,
+            completed: false,
+            id: UUID(),
+          })
+          e.target.value = ''
+        }
+      }}
     />
   )
 

@@ -14,19 +14,20 @@ type FunctionMaybe<T = unknown> = (() => T) | T;
 
 type Func<A extends unknown[], R extends unknown = void> = (...args: A) => R;
 
-type FragmentUndefined = { values: undefined; fragmented?: false; length: 0 };
+type CashUndefined = { values: undefined; cashed?: false; length: 0 };
 
-type FragmentNode = { values: Node; fragmented?: false; length: 1 };
+type CashNode = { values: Node; cashed?: false; length: 1 };
 
-type FragmentFragment = { values: Fragment; fragmented: true; length: 1 };
+type CashCash = { values: Cash; cashed: true; length: 1 };
 
-type FragmentNodes = { values: Node[]; fragmented?: false; length: 2 | 3 | 4 | 5 };
+type CashNodes = { values: Node[]; cashed?: false; length: 2 | 3 | 4 | 5 };
 
-type FragmentFragments = { values: Fragment[]; fragmented: true; length: 2 | 3 | 4 | 5 };
+type CashCashs = { values: Cash[]; cashed: true; length: 2 | 3 | 4 | 5 };
 
-type FragmentMixed = { values: (Node | Fragment)[]; fragmented: true; length: 2 | 3 | 4 | 5 };
+type CashMixed = { values: (Node | Cash)[]; cashed: true; length: 2 | 3 | 4 | 5 };
 
-type Fragment = FragmentUndefined | FragmentNode | FragmentFragment | FragmentNodes | FragmentFragments | FragmentMixed;
+type Cash = CashUndefined | CashNode | CashCash | CashNodes | CashCashs | CashMixed;
+
 type Props = Record<string, any>;
 
 type Truthy<T = unknown> = Exclude<T, 0 | -0 | 0n | -0n | "" | false | null | undefined | void>;
@@ -37,13 +38,13 @@ export type {
   Component,
   ComponentFunction,
   ComponentIntrinsicElement,
-  FragmentUndefined,
-  FragmentNode,
-  FragmentFragment,
-  FragmentNodes,
-  FragmentFragments,
-  FragmentMixed,
-  Fragment,
+  CashUndefined,
+  CashNode,
+  CashCash,
+  CashNodes,
+  CashCashs,
+  CashMixed,
+  Cash,
   FunctionMaybe,
   Func,
   Props,
