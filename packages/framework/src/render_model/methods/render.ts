@@ -10,10 +10,11 @@ const render = (component: Child, parent: Element) => {
 
   parent.innerText = "";
 
-  return root(() => {
+  return root((dipose) => {
     setChildren(parent, component);
 
     return (): void => {
+      dipose();
       parent.textContent = "";
     };
   });

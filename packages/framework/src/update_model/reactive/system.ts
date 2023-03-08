@@ -8,6 +8,9 @@ let scheduledEffects = false,
   currentObserversIndex = 0,
   effects: ComputationNode[] = [];
 
+const $TRACKING = Symbol("$TRACKING");
+const $SIGNAL = Symbol("$SIGNAL");
+const $EFFECT = Symbol("$EFFECT");
 const SCOPE = Symbol("SCOPE");
 const ERROR_HANDLERS = Symbol("ERROR_HANDLERS");
 const NOOP = () => {};
@@ -17,6 +20,29 @@ const CHECK = 1;
 const DIRTY = 2;
 const DISPOSED = 3;
 
+function flushEffects() {
+  scheduledEffects = true;
+  queueMicrotask(runEffects);
+}
+
+function runEffects() {
+  if (!effects.length) {
+    scheduledEffects = false;
+    return;
+  }
+
+  runningEffects = true;
+
+  for (let i = 0; i < effects.length; i++) {
+    // If parent scope is dirty it means that this effect will be disposed of so we skip.
+    if (!isZombie(effects[i])) read.call(effects[i]);
+  }
+
+  effects = [];
+  scheduledEffects = false;
+  runningEffects = false;
+}
+
 function isFunction(fnOrValue: unknown): fnOrValue is Function {
   return fnOrValue instanceof Function;
 }
@@ -25,14 +51,30 @@ function referenceEquality<T>(_old: T, _new: T) {
   return _old === _new;
 }
 
-function stale(node: any, state: number) {
-  if (node._state < state) {
-    node._state = state;
+function isZombie(node: Scope) {
+  let scope = node[SCOPE];
 
-    if (node._observers) {
-      for (let i = 0; i < node._observers.length; i++) {
-        stale(node._observers[i], CHECK);
-      }
+  while (scope) {
+    // We're looking for a dirty parent effect scope.
+    if (scope._compute && scope._state === DIRTY) return true;
+    scope = scope[SCOPE];
+  }
+
+  return false;
+}
+
+function stale(node: any, state: number) {
+  if (node._state >= state) return;
+
+  if (node._effect && node._state === CLEAN) {
+    effects.push(node);
+    if (!scheduledEffects) flushEffects();
+  }
+
+  node._state = state;
+  if (node._observers) {
+    for (let i = 0; i < node._observers.length; i++) {
+      stale(node._observers[i], CHECK);
     }
   }
 }
@@ -48,11 +90,11 @@ function shouldUpdate(node: ComputationNode) {
     }
   }
 
-  if (this._state === DIRTY) {
-    update(this);
+  if (node._state === DIRTY) {
+    update(node);
   }
 
-  this._state = CLEAN;
+  node._state = CLEAN;
 }
 
 function cleanup(node: ComputationNode) {
@@ -152,38 +194,35 @@ function handleError(scope: Scope | null, error: unknown, depth?: number) {
 function read(this: ComputationNode) {
   if (this._state === DISPOSED) return this._value;
 
-  if (this)
-    if (currentObserver) {
-      if (!currentObservers && currentObserver._sources && currentObserver._sources[currentObserversIndex] == this) {
-        currentObserversIndex++;
-      } else {
-        if (!currentObservers) currentObservers = [this];
-        else currentObservers.push(this);
-      }
+  if (currentObserver) {
+    if (!currentObservers && currentObserver._sources && currentObserver._sources[currentObserversIndex] == this) {
+      currentObserversIndex++;
+    } else {
+      if (!currentObservers) currentObservers = [this];
+      else currentObservers.push(this);
     }
+  }
 
-  if (this._computed) shouldUpdate(this);
+  if (this._computed) {
+    shouldUpdate(this);
+  }
 
   return this._value;
 }
 
-function write(this: any, value: any) {
-  if (typeof value === "function") {
-    const computed = value;
-    stale(this.computed, DIRTY);
+function write(this: ComputationNode, newValue: any): any {
+  const value = isFunction(newValue) ? newValue(this._value) : newValue;
 
-    this.computed = computed;
-  } else {
-    if (!this._equalsCheck(value, this._value)) {
-      const observers = this._observers || [];
-
-      for (let i = 0; i < observers.length; i++) {
-        stale(observers[i], DIRTY);
+  if (this._changed(this._value, value)) {
+    this._value = value;
+    if (this._observers) {
+      for (let i = 0; i < this._observers.length; i++) {
+        stale(this._observers[i], DIRTY);
       }
-
-      this._value = value;
     }
   }
+
+  return this._value;
 }
 
 function removeSourceObservers(node: ComputationNode, index: number) {
@@ -212,6 +251,27 @@ function lookup(scope: Scope | null, key: string | symbol): any {
 }
 
 // ------------------------------------
+
+function peek<T>(compute: () => T): T {
+  const prev = currentObserver;
+  currentObserver = null;
+  const result = compute();
+  currentObserver = prev;
+  return result;
+}
+
+function untrack<T>(compute: () => T): T {
+  compute[$TRACKING] = false;
+
+  const prev = currentScope;
+  currentScope = null;
+  const result = peek(compute);
+  currentScope = prev;
+
+  compute[$TRACKING] = true;
+
+  return result;
+}
 
 function root<T>(init: (dispose: Dispose) => T): T {
   const scope = createScope();
@@ -337,5 +397,8 @@ function createComputation<T>(initialValue: any, compute: (() => T) | null, opti
   return new Computation(initialValue, compute, options);
 }
 
-export { createComputation, root, dispose, onDispose };
-export { SCOPE, isFunction, referenceEquality, read, write };
+// Other
+export { $TRACKING, $SIGNAL, $EFFECT, SCOPE, isFunction, referenceEquality, read, write };
+
+// Library
+export { createComputation, root, dispose, onDispose, untrack };

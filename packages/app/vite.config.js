@@ -8,7 +8,7 @@ const projectRootDir = resolve(__dirname);
 export default defineConfig({
   resolve: {
     alias: {
-      "@lnl/framework": "/Users/patrick/p/no-name/packages/framework/dist/index.js"
+      "@lnl/framework": "/Users/patsalvatore/eat_n_educate/no-name/packages/framework/dist/"
     }
   },
   plugins: [

@@ -19,26 +19,6 @@ const routesSearchTree = createRoutesSearchTree(routes);
 const app = document.getElementById("app") as HTMLElement;
 const template = nav();
 
-function createRouter() {
-  // invoke routing mechanism
-  document.querySelectorAll('[href^="/"]').forEach((el) => {
-    el.addEventListener("click", (evt) => {
-      evt.preventDefault();
-
-      const index = "/";
-      const url = new URL((el as HTMLAnchorElement).href);
-      const path = url.pathname;
-      window.history.pushState({ path }, path, (el as HTMLAnchorElement).href);
-
-      const parts = path.split(index).filter(Boolean);
-
-      findPage(parts.length ? parts : "/")
-        .c({ query: url.searchParams, params: { path: url.pathname } })
-        .then((component) => render(app, template + component));
-    });
-  });
-}
-
 function createRoutesSearchTree(r: typeof routes) {
   const root = "/";
   const tree = {
@@ -112,6 +92,5 @@ findPage(parts.length ? parts : "/")
   .c({ query: url.searchParams, params: { path: url.pathname } })
   .then((component: string) => {
     render(app, template + component);
-    createRouter();
     setupCommentToggle();
   });

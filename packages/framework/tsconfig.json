@@ -34,7 +34,6 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": false,
-    // "strict": true,
     "strict": false,
     "strictBindCallApply": true,
     "strictFunctionTypes": true,

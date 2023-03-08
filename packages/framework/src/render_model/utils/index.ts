@@ -59,9 +59,9 @@ const isNil = (value: unknown): value is null | undefined => {
   return value === null || value === undefined;
 };
 
-// const isNode = (value: unknown): value is Node => {
-//   return value instanceof Node;
-// };
+const isNode = (value: unknown): value is Node => {
+  return value instanceof Node;
+};
 
 // const isObject = (value: unknown): value is object => {
 //   return typeof value === "object" && value !== null;
@@ -135,7 +135,7 @@ export {
   // isFalsy,
   isFunction,
   isNil,
-  // isNode,
+  isNode,
   // isObject,
   // isPromise,
   isString,

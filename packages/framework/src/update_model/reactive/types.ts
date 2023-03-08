@@ -6,7 +6,7 @@ type Callable<This = unknown, Return = void> = {
 
 type ContextRecord = Record<string | symbol, unknown>;
 
-interface ComputationNode<T = any> extends Scope {
+type ComputationNode<T = any> = {
   _name?: string | undefined;
 
   _effect: boolean;
@@ -24,7 +24,7 @@ interface ComputationNode<T = any> extends Scope {
   _changed: (prev: T, next: T) => boolean;
 
   call(this: ComputationNode<T>): T;
-}
+} & Scope;
 
 type EqualityCheck<T extends unknown> = (a: T, b: T) => boolean;
 
@@ -34,13 +34,28 @@ type Effect = {
 
 type Func<T> = () => T;
 
-interface Dispose {
+type ReadSignal<T> = {
+  (): T;
+  /** only available during dev. */
+  node?: ComputationNode;
+};
+type WriteSignal<T> = {
+  /** only available during dev. */
+  node?: ComputationNode;
+  set: (value: T | NextValue<T>) => T;
+} & ReadSignal<T>;
+
+type NextValue<T> = {
+  (prevValue: T): T;
+};
+
+type Dispose = {
   (): void;
-}
+};
 
-interface Disposable extends Callable {}
+type Disposable = {} & Callable;
 
-interface Scope {
+type Scope = {
   [SCOPE]: Scope | null;
 
   _state: number;
@@ -56,7 +71,7 @@ interface Scope {
   _cleanups: Disposable | Disposable[] | null;
 
   append(scope: Scope): void;
-}
+};
 
 type Setter<T> = (undefined extends T ? () => undefined : {}) &
   (<U extends T>(value: (prev: T) => U) => U) &
@@ -99,4 +114,6 @@ export {
   SignalValue,
   Signal,
   Setter,
+  WriteSignal,
+  NextValue,
 };
