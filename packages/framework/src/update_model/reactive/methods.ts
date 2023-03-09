@@ -1,13 +1,10 @@
-import { read, write, createComputation, isFunction, dispose, onDispose, $SIGNAL } from "./system";
+import { read, write, createComputation, isFunction, dispose, onDispose, wrapSignal } from "./system";
 import type { Effect, SignalMemoOptions, SignalOptions, SignalValue, WriteSignal } from "./types";
 
 export function signal<T>(initial?: SignalValue<T>, options?: SignalOptions<T>) {
   const node = createComputation(initial, null, options);
 
-  const reader = read.bind(node);
-  reader[$SIGNAL] = true;
-
-  return [reader, write.bind(node) as WriteSignal<T>["set"]];
+  return [wrapSignal(read.bind(node)), write.bind(node) as WriteSignal<T>["set"]];
 }
 
 export function memo<T, R = never>(compute: () => T, options?: SignalMemoOptions<T, R>) {

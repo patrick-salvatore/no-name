@@ -1,4 +1,11 @@
-import type { Dispose, Scope, Callable, SignalOptions, ComputationNode, MaybeDisposable } from "./types";
+import type {
+  Dispose,
+  Scope,
+  Callable,
+  SignalOptions,
+  ComputationNode,
+  MaybeDisposable,
+} from "./types";
 
 let scheduledEffects = false,
   runningEffects = false,
@@ -23,6 +30,11 @@ const DISPOSED = 3;
 function flushEffects() {
   scheduledEffects = true;
   queueMicrotask(runEffects);
+}
+
+function wrapSignal(signal: typeof read) {
+  signal[$SIGNAL] = true;
+  return signal;
 }
 
 function unwrap<T>(fn: T): T extends () => any ? ReturnType<T> : T {
@@ -106,9 +118,11 @@ function shouldUpdate(node: ComputationNode) {
 }
 
 function cleanup(node: ComputationNode) {
-  if (node._nextSibling && node._nextSibling[SCOPE] === node) dispose.call(node, false);
+  if (node._nextSibling && node._nextSibling[SCOPE] === node)
+    dispose.call(node, false);
   if (node._cleanups) emptyDisposal(node);
-  if (node._context && node._context[ERROR_HANDLERS]) (node._context[ERROR_HANDLERS] as any[]) = [];
+  if (node._context && node._context[ERROR_HANDLERS])
+    (node._context[ERROR_HANDLERS] as any[]) = [];
 }
 
 function emptyDisposal(scope: ComputationNode) {
@@ -192,7 +206,8 @@ function handleError(scope: Scope | null, error: unknown, depth?: number) {
   if (!handlers) throw error;
 
   try {
-    const coercedError = error instanceof Error ? error : Error(JSON.stringify(error));
+    const coercedError =
+      error instanceof Error ? error : Error(JSON.stringify(error));
     for (const handler of handlers) handler(coercedError);
   } catch (error) {
     handleError(scope![SCOPE], error);
@@ -203,7 +218,11 @@ function read(this: ComputationNode) {
   if (this._state === DISPOSED) return this._value;
 
   if (currentObserver) {
-    if (!currentObservers && currentObserver._sources && currentObserver._sources[currentObserversIndex] == this) {
+    if (
+      !currentObservers &&
+      currentObserver._sources &&
+      currentObserver._sources[currentObserversIndex] == this
+    ) {
       currentObserversIndex++;
     } else {
       if (!currentObservers) currentObservers = [this];
@@ -263,27 +282,28 @@ function lookup(scope: Scope | null, key: string | symbol): any {
 function peek<T>(compute: () => T): T {
   const prev = currentObserver;
   currentObserver = null;
+  compute[$TRACKING] = false;
   const result = compute();
+  compute[$TRACKING] = true;
   currentObserver = prev;
   return result;
 }
 
 function untrack<T>(compute: () => T): T {
-  compute[$TRACKING] = false;
-
   const prev = currentScope;
   currentScope = null;
   const result = peek(compute);
   currentScope = prev;
-
-  compute[$TRACKING] = true;
-
   return result;
 }
 
 function root<T>(init: (dispose: Dispose) => T): T {
   const scope = createScope();
-  return compute(scope, !init.length ? init : init.bind(null, dispose.bind(scope)), null) as T;
+  return compute(
+    scope,
+    !init.length ? init : init.bind(null, dispose.bind(scope)),
+    null
+  ) as T;
 }
 
 let scopes: Scope[] = [];
@@ -340,7 +360,11 @@ function dispose(this: Scope, self = true) {
   scopes = [];
 }
 
-function compute<T>(scope: Scope | null, fn: Callable<Scope | null, T>, observer: ComputationNode<T> | null): T {
+function compute<T>(
+  scope: Scope | null,
+  fn: Callable<Scope | null, T>,
+  observer: ComputationNode<T> | null
+): T {
   let prevScope = currentScope,
     prevObserver = currentObserver;
 
@@ -390,7 +414,12 @@ function createScope(): Scope {
   return new Scope();
 }
 
-const Computation = function ComputationNode(this: ComputationNode, initialValue, compute, options) {
+const Computation = function ComputationNode(
+  this: ComputationNode,
+  initialValue,
+  compute,
+  options
+) {
   Scope.call(this);
 
   if (compute) this._computed = compute;
@@ -410,12 +439,36 @@ Object.setPrototypeOf(ComputeProto, ScopeProto);
 ComputeProto._changed = isNotEqual;
 ComputeProto.call = read;
 
-function createComputation<T>(initialValue: any, compute: (() => T) | null, options?: SignalOptions<T>): ComputationNode {
+function createComputation<T>(
+  initialValue: any,
+  compute: (() => T) | null,
+  options?: SignalOptions<T>
+): ComputationNode {
   return new Computation(initialValue, compute, options);
 }
 
 // Other
-export { $TRACKING, $SIGNAL, $EFFECT, SCOPE, unwrap, isFunction, referenceEquality, isNotEqual, read, write };
+export {
+  $TRACKING,
+  $SIGNAL,
+  $EFFECT,
+  SCOPE,
+  unwrap,
+  isFunction,
+  referenceEquality,
+  isNotEqual,
+  read,
+  write,
+  wrapSignal,
+};
 
 // Library
-export { createComputation, root, dispose, onDispose, untrack, compute, createScope };
+export {
+  createComputation,
+  root,
+  dispose,
+  onDispose,
+  untrack,
+  compute,
+  createScope,
+};

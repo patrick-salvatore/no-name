@@ -1,0 +1,42 @@
+.item-list-container {
+  width: 300px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.item-list-heading {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  font-size: 18px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #f2f2f2;
+  border-radius: 5px;
+}
+
+.shuffle-button {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #0077c0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.shuffle-button:hover {
+  background-color: #005ca3;
+}

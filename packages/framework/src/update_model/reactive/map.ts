@@ -10,7 +10,6 @@ export function computedMap<Item, MappedItem>(
   map: (value: ReadSignal<Item>, index: number) => MappedItem,
   options?,
 ): ReadSignal<MappedItem[]> {
-  console.log(list, map)
   return read.bind(
     createComputation<MappedItem[]>(
       [],
@@ -29,9 +28,10 @@ export function computedMap<Item, MappedItem>(
 }
 
 function updateMap<Item, MappedItem>(this: MapData<Item, MappedItem>): any[] {
-  let i = 0,
-    newItems = this._list() || [],
-    mapper = () => this._map(read.bind(this._nodes[i]), i);
+  // console.log(this)
+  let i = 0
+  let newItems = this._list() || []
+  let mapper = () => this._map(read.bind(this._nodes[i]), i);
 
   scoped(() => {
     if (newItems.length === 0) {

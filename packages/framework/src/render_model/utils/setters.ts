@@ -172,8 +172,6 @@ const setChildReplacementText = ( child: string, prev: Node): Node => {
 const setStatic = ( parent: HTMLElement, cash: Cash, child: Child, dynamic: boolean): void => {
   if ( !dynamic && child === undefined ) return;
 
-  console.log(parent, child)
-
   const prev = CashUtils.getChildren( cash );
   const prevIsArray = prev instanceof Array;
   const prevLength = prevIsArray ? prev.length : 1;
@@ -233,7 +231,6 @@ const setStatic = ( parent: HTMLElement, cash: Cash, child: Child, dynamic: bool
       CashUtils.pushNode ( nextCash, child );
 
     } else if ( childType === "function" ) {
-
       const c = CashUtils.make ();
 
       CashUtils.pushCash( nextCash, c );
@@ -300,9 +297,9 @@ const setStatic = ( parent: HTMLElement, cash: Cash, child: Child, dynamic: bool
     }
   }
 
-  // Some diffs can be safely skipped, if we only added some dynamic children already
-  // FIXME: Children added dynamically must be taken into account perfectly though,
-  // this most probably isn't perfect, "prev" may not be representative of the current state, when dynamic children are added
+  // // Some diffs can be safely skipped, if we only added some dynamic children already
+  // // FIXME: Children added dynamically must be taken into account perfectly though,
+  // // this most probably isn't perfect, "prev" may not be representative of the current state, when dynamic children are added
   if ( prevLength > 0 || nextHasStaticChildren || !nextHasDynamicChildren ) {
     try {
       diff( parent, prev, next, prevSibling );
