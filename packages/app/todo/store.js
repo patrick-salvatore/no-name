@@ -1,8 +1,6 @@
 import { signal } from "@lnl/framework";
 
-
-
-const [store, _setStore] = signal({
+export const store = signal({
   todos: [
     {
       text: "Go workout",
@@ -33,10 +31,8 @@ const [store, _setStore] = signal({
 });
 
 export const addTodo = (todo) => {
-  _setStore((s) => ({ ...s, todos: [...s.todos, todo] }));
+  store[1]((s) => ({ ...s, todos: [...s.todos, todo] }));
 };
-
-export const useStore = () => store();
 
 export const getCompletedCount = (todos) =>
   todos.reduce((count, todo) => (todo.completed ? count + 1 : count), 0);

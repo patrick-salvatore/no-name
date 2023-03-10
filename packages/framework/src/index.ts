@@ -1,3 +1,8 @@
-export * from "./render_model/methods";
-export * from "./update_model";
-export * from "./components";
+let lib;
+if (process.env.RUNTIME === "reactive") {
+  lib = require("./reactive");
+} else {
+  lib = require("./vdom");
+}
+
+export default lib;

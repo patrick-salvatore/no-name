@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "vite",
+    "dev:vdom": "RUNTIME=vdom vite",
+    "dev:reactive": "RUNTIME=reactive vite",
     "build": "vite build",
     "preview": "vite preview"
   },

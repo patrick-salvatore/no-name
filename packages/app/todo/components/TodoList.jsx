@@ -1,18 +1,20 @@
+import { effect, For } from "@lnl/framework";
 
-import { effect } from '@lnl/framework';
-import { getFilteredTodos, useStore } from '../store'
+import { store } from "../store";
 
 import TodoItem from "./TodoItem";
 
 const TodoList = () => {
   return (
     <ul class="todo-list">
-      {useStore().todos.map((todo) => {
-        return <TodoItem todo={todo}/>
-      })}
+      <For each={store[0]()}>
+        {(todo) => {
+          return <TodoItem todo={todo} />;
+        }}
+      </For>
+      {/* {useStore().todos.map()} */}
     </ul>
   );
 };
 
 export default TodoList;
-

@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 
-import plugin from "@lnl/plugin";
+import plugin, { compVdomJsxPlugin } from "@lnl/plugin";
 
 export default defineConfig({
   resolve: {
     alias: {}
   },
-  plugins: [plugin()]
+  plugins: [process.env.RUNTIME === "vdom" ? compVdomJsxPlugin() : plugin()]
 });

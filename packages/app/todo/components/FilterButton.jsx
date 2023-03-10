@@ -1,15 +1,11 @@
-import { useStore } from '../store'
-
+import { store } from "../store";
 
 const FilterButton = ({ children, filter }) => {
-  const { visibilityFilter } = useStore();
-
-  const setVisibilityFilter = () => { }
-
+  const setVisibilityFilter = () => {};
 
   return (
     <a
-      class={{ selected: filter === visibilityFilter }}
+      class={{ selected: filter === store[0].visibilityFilter }}
       style={{ cursor: "pointer" }}
       onClick={() => setVisibilityFilter(filter)}
     >
@@ -17,6 +13,5 @@ const FilterButton = ({ children, filter }) => {
     </a>
   );
 };
-
 
 export default FilterButton;

@@ -4,10 +4,15 @@
   "type": "module",
   "sideEffect": true,
   "main": "./dist/index.js",
-  "exports": "./dist/index.js",
+  "exports": {
+    ".": "./dist/reactive/index.js",
+    "./reactive": "./dist/reactive/index.js",
+    "./vdom": "./dist/vdom/index.js"
+  },
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
+    "build:v": "rm -rf ./dist && tsc && tsc-alias",
     "build": "rm -rf ./dist && tsc && tsc-alias",
     "build:watch": "tsc --watch",
     "prepublishOnly": "npm run clean && npm run compile"
