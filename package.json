@@ -4,7 +4,7 @@
   "workspaces": [
     "packages/vanilla",
     "packages/plugin",
-    "packages/app",
+    "packages/playground/*",
     "packages/framework",
     "packages/lib"
   ],
@@ -15,11 +15,11 @@
   },
   "scripts": {
     "clean": "npx -y rimraf node_modules **/node_modules/ package-lock.json && npm i",
-    "start:v": "npm run dev -w packages/vanilla",
-    "start:a": "npm run dev -w packages/app",
     "build:p": "npm run build -w packages/plugin",
     "build:f": "npm run build -w packages/framework",
-    "build:a": "npm run build -w packages/app",
-    "build": "npm run build:f && npm run build:p"
+    "build": "npm run build:f && npm run build:p",
+    "playground:counter": "npm run dev -w packages/playground/counter",
+    "playground:list": "npm run dev -w packages/playground/list",
+    "playground:todo-list": "npm run dev -w packages/playground/todo-list"
   }
 }

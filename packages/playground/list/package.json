@@ -1,10 +1,10 @@
 {
-  "name": "@lnl/app",
+  "name": "@lnl/playground-list",
   "version": "0.0.0",
   "main": "index.js",
   "scripts": {
     "dev:vdom": "RUNTIME=vdom vite",
-    "dev:reactive": "RUNTIME=reactive vite",
+    "dev": "RUNTIME=reactive vite",
     "build": "vite build",
     "preview": "vite preview"
   },
