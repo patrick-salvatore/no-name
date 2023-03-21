@@ -1,6 +1,6 @@
-import wrapElement from "~/reactive/render_model/methods/wrap_element";
+import wrapElement from "~/reactive/render_model/utils/wrap_element";
 import { createHtmlNode } from "~/reactive/render_model/utils/creators";
-import { setProps } from "~/reactive/render_model/utils/setters";
+import { setChildren, setProp } from "~/reactive/render_model/utils/setters";
 import {
   isFunction,
   isNil,
@@ -8,6 +8,7 @@ import {
   isNode,
   isVoidChild,
 } from "~/reactive/render_model/utils";
+
 import type { Child, Component, Props } from "~/reactive/render_model/types";
 
 import { untrack } from "~/reactive/update_model/system";
@@ -19,7 +20,7 @@ function createElement<P = {}>(
   props: P | null,
   ..._children: Child[]
 ) {
-  const { children: __children, key, ref: _, ...rest } = (props || {}) as Props; // TSC
+  const { children: __children, key, ref, ...rest } = (props || {}) as Props; // TSC
   const children =
     _children.length === 1
       ? _children[0]
@@ -31,6 +32,7 @@ function createElement<P = {}>(
     const props = rest;
 
     if (!isNil(children)) props.children = children;
+    if (!isNil(ref)) props.ref = ref;
 
     return wrapElement(() =>
       untrack(
@@ -40,11 +42,20 @@ function createElement<P = {}>(
   } else if (isString(component)) {
     const props = rest;
     if (!isVoidChild(children)) props.children = children;
+    if (!isNil(ref)) props.ref = ref;
 
     return wrapElement((): Child => {
       const child = createHtmlNode(component) as HTMLElement; // TSC
 
-      untrack(() => setProps(child, props));
+      untrack(() => {
+        for (const key in props) {
+          if (key === "children") {
+            setChildren(child, props.children);
+          } else {
+            setProp(child, key, props[key]);
+          }
+        }
+      });
 
       return child;
     });
@@ -54,7 +65,5 @@ function createElement<P = {}>(
     throw new Error("Invalid component");
   }
 }
-
-/* EXPORT */
 
 export default createElement;

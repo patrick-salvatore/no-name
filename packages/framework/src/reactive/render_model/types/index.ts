@@ -32,6 +32,8 @@ type Props = Record<string, any>;
 
 type Truthy<T = unknown> = Exclude<T, 0 | -0 | 0n | -0n | "" | false | null | undefined | void>;
 
+type Ref<T = any> = {current: T | null}
+
 export type {
   Callback,
   Child,
@@ -48,5 +50,6 @@ export type {
   FunctionMaybe,
   Func,
   Props,
+  Ref,
   Truthy,
 };

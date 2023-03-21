@@ -91,10 +91,10 @@ const CashUtils = {
     cash.length = 1;
   },
 
-  replaceWithCash: (cash: Cash, fragment: Cash): void => {
-    cash.values = fragment.values;
-    cash.cashed = fragment.cashed;
-    cash.length = fragment.length;
+  replaceWithCash: (cash1: Cash, cash2: Cash): void => {
+    cash1.values = cash2.values;
+    cash1.cashed = cash2.cashed;
+    cash1.length = cash2.length;
   },
 };
 

@@ -1,3 +1,5 @@
+// from https://github.com/maverick-js/signals/blob/main/src/core.ts
+
 import type {
   Dispose,
   Scope,
@@ -33,7 +35,7 @@ function wrapSignal<T>(element: T): T {
 }
 
 function isSignal<T>(element: T): T {
-  return element[$SIGNAL]
+  return element[$SIGNAL];
 }
 
 function flushEffects() {
@@ -45,17 +47,21 @@ function unwrap<T>(fn: T): T extends () => any ? ReturnType<T> : T {
   return isFunction(fn) ? fn() : fn;
 }
 
-function traceGraph(node:  ComputationNode) {
+function traceGraph(node: ComputationNode) {
   untrack(() => {
     let current = node;
     let step = 1;
     while (current) {
-      console.log(`traceGraph step ${step} current ${JSON.stringify(current)})}`);
+
+      console.log(
+        current,
+        `traceGraph step ${step} current ${current}`
+      );
       // @ts-expect-error
       current = current._nextSibling;
-      step++
+      step++;
     }
-  })
+  });
 }
 
 function runEffects() {
@@ -118,24 +124,6 @@ function stale(node: any, state: number) {
       stale(node._observers[i], CHECK);
     }
   }
-}
-
-function shouldUpdate(node: ComputationNode) {
-  if (node._state === CHECK) {
-    for (let i = 0; i < node._sources!.length; i++) {
-      shouldUpdate(node._sources![i]);
-
-      if ((node._state as number) === DIRTY) {
-        break;
-      }
-    }
-  }
-
-  if (node._state === DIRTY) {
-    update(node);
-  }
-
-  node._state = CLEAN;
 }
 
 function cleanup(node: ComputationNode) {
@@ -235,6 +223,24 @@ function handleError(scope: Scope | null, error: unknown, depth?: number) {
   }
 }
 
+function shouldUpdate(node: ComputationNode) {
+  if (node._state === CHECK) {
+    for (let i = 0; i < node._sources!.length; i++) {
+      shouldUpdate(node._sources![i]);
+
+      if ((node._state as number) === DIRTY) {
+        break;
+      }
+    }
+  }
+
+  if (node._state === DIRTY) {
+    update(node);
+  }
+
+  node._state = CLEAN;
+}
+
 function read(this: ComputationNode) {
   if (this._state === DISPOSED) return this._value;
 
@@ -293,7 +299,6 @@ function lookup(scope: Scope | null, key: string | symbol): any {
 
   while (current) {
     value = current._context?.[key];
-    console.log(value);
     if (value !== undefined) return value;
     current = current[SCOPE];
   }
@@ -426,7 +431,7 @@ ScopeProto.append = function appendScope(scope: Scope) {
   this._nextSibling = scope;
 };
 
-export function scoped<T>(run: () => T, scope: Scope | null): T | undefined {
+function scoped<T>(run: () => T, scope: Scope | null): T | undefined {
   try {
     return compute<T>(scope, run, null);
   } catch (error) {
@@ -473,6 +478,38 @@ function createComputation<T>(
   return new Computation(initialValue, compute, options);
 }
 
+interface Selector<T = any> extends ComputationNode {
+  _key: T;
+  _value: boolean;
+  _nodes: Map<T, Selector> | null;
+  _refs: number;
+  call(): void;
+}
+
+function Selector<T>(
+  this: Selector<T>,
+  key: T,
+  initialValue: boolean,
+  nodes: Map<T, Selector>
+) {
+  this._state = CLEAN;
+  this._key = key;
+  this._value = initialValue;
+  this._refs = 0;
+  this._nodes = nodes;
+  this._observers = null;
+}
+
+const SelectorProto = Selector.prototype;
+SelectorProto._changed = isNotEqual;
+SelectorProto.call = function (this: Selector) {
+  this._refs -= 1;
+  if (!this._refs) {
+    this._nodes!.delete(this._key);
+    this._nodes = null;
+  }
+};
+
 // Other
 export {
   $TRACKING,
@@ -487,8 +524,8 @@ export {
   read,
   write,
   lookup,
-  traceGraph,
-  setContext
+  setContext,
+  Selector,
 };
 
 // Library
@@ -501,4 +538,5 @@ export {
   untrack,
   compute,
   createScope,
+  traceGraph
 };

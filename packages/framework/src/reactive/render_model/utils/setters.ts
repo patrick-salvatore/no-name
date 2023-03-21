@@ -1,45 +1,61 @@
-import { isNil } from "~/reactive/render_model/utils";
+import { isFunction, isNil } from "~/reactive/render_model/utils";
 import {
   createText,
   createComment,
 } from "~/reactive/render_model/utils/creators";
-
 import CashUtils from "~/reactive/render_model/utils/cashUtil";
+import { resolveChild } from "~/reactive/render_model/utils/resolver";
 
 import type { Cash, Child } from "~/reactive/render_model/types";
 
-import { resolveChild } from "~/reactive/render_model/utils/resolver";
+import { effect, isSignal, on } from "~/reactive/update_model";
 
 import { SYMBOL_UNCACHED } from "../constants";
+
 import diff from "./diff";
 
-const setStyles = (element: HTMLElement, stylesString: Record<string, string | boolean> | string) => {
-  if (typeof stylesString === "object") {
-    for (const key in stylesString) {
-      if (stylesString[key]) {
-        element.style[key] = stylesString[key]
-      }
+const setStyles = (
+  element: HTMLElement,
+  styleTag: Record<string, string | boolean | (() => boolean | string)> | string
+) => {
+  if (typeof styleTag === "object") {
+    for (const key in styleTag) {
+      element.style[key] = styleTag[key];
     }
     return;
   }
 
-  element.setAttribute("style", stylesString);
+  element.setAttribute("style", styleTag);
 };
 
 const setClass = (
   element: HTMLElement,
-  _class: Record<string, string | boolean> | string
+  glass: Record<string, string | boolean | (() => boolean | string)> | string
 ) => {
-  if (typeof _class === "object") {
-    for (const key in _class) {
-      if (_class[key]) {
+  if (typeof glass === "object") {
+    for (const key in glass) {
+      const s = glass[key];
+
+      if (isFunction(s)) {
+        if (isSignal(s)) {
+          effect(
+            on(
+              s,
+              () => {
+                element.classList.toggle(key);
+              },
+              { defer: true }
+            )
+          );
+        }
+      } else {
         element.classList.toggle(key);
       }
     }
     return;
   }
 
-  element.className = _class;
+  element.className = glass;
 };
 
 const setAttribute = (() => {
@@ -91,6 +107,7 @@ const setEvent = (() => {
     onclick: ["_onclick", false],
     ondblclick: ["_ondblclick", false],
     oninput: ["_oninput", false],
+    onchange: ["_oninput", false],
     onkeydown: ["_onkeydown", false],
     onkeyup: ["_onkeyup", false],
     onmousedown: ["_onmousedown", false],
@@ -130,30 +147,36 @@ const setEvent = (() => {
 
   return (
     element: HTMLElement,
-    event: string,
+    eventName: string,
     value: null | undefined | EventListener
   ): void => {
-    const delegated = delegatedEvents[event];
+    const delegatedEvent = delegatedEvents[eventName];
 
-    if (delegated) {
-      if (!delegated[1]) {
+    if (delegatedEvent) {
+      if (!delegatedEvent[1]) {
+        // mask onchange to "oninput"
+        eventName = eventName === "onchange" ? "oninput" : eventName;
+
         // Not actually delegating yet
+        delegatedEvent[1] = true;
 
-        delegated[1] = true;
-
-        delegate(event);
+        delegate(eventName);
       }
 
-      element[delegated[0]] = value;
+      element[delegatedEvent[0]] = value;
     } else {
-      element[event] = value;
+      element[eventName] = value;
     }
   };
 })();
 
+const setRef = (element: HTMLElement, value: any) => {
+  value.current = element;
+};
+
 const setProp = (element: HTMLElement, key: string, value: any): void => {
-  if (key === "children") {
-    setChildren(element, value);
+  if (key === "ref") {
+    setRef(element, value);
   } else if (key === "style") {
     setStyles(element, value);
   } else if (key === "class") {
@@ -161,16 +184,13 @@ const setProp = (element: HTMLElement, key: string, value: any): void => {
   } else if (key.charCodeAt(0) === 111 && key.charCodeAt(1) === 110) {
     setEvent(element, key.toLowerCase(), value);
   } else {
-    setAttribute(element, key, value);
-  }
-};
-
-const setProps = (
-  element: HTMLElement,
-  object: Record<string, unknown>
-): void => {
-  for (const key in object) {
-    setProp(element, key, object[key]);
+    if (isSignal(value)) {
+      effect(() => {
+        setAttribute(element, key, value());
+      });
+    } else {
+      setAttribute(element, key, value);
+    }
   }
 };
 
@@ -234,11 +254,15 @@ const setStatic = (
 
   // First time setting node
   if (prevLength === 1) {
-    const node = setChildReplacementText(String(child), prevFirst);
+    const type = typeof child;
 
-    CashUtils.replaceWithNode(cash, node);
+    if (type === "string" || type === "number" || type === "bigint") {
+      const node = setChildReplacementText(String(child), prevFirst);
 
-    return;
+      CashUtils.replaceWithNode(cash, node);
+
+      return;
+    }
   }
 
   const nextCash = CashUtils.make();
@@ -256,7 +280,6 @@ const setStatic = (
       childType === "bigint"
     ) {
       nextHasStaticChildren = true;
-
       CashUtils.pushNode(nextCash, createText(child));
     } else if (
       childType === "object" &&
@@ -264,7 +287,6 @@ const setStatic = (
       typeof child.nodeType === "number"
     ) {
       nextHasStaticChildren = true;
-
       CashUtils.pushNode(nextCash, child);
     } else if (childType === "function") {
       const c = CashUtils.make();
@@ -362,4 +384,4 @@ const setChildren = (
   resolveChild(child, setStatic.bind(undefined, parent, cash));
 };
 
-export { setChildren, setProps };
+export { setChildren, setProp };

@@ -26,6 +26,12 @@ type ComputationNode<T = any> = {
   call(this: ComputationNode<T>): T;
 } & Scope;
 
+type Dispose = {
+  (): void;
+};
+
+type Disposable = {} & Callable;
+
 type EqualityCheck<T extends unknown> = (a: T, b: T) => boolean;
 
 type Effect = {
@@ -33,6 +39,10 @@ type Effect = {
 };
 
 type Func<T> = () => T;
+
+type GraphRecord = {
+  [k: string]: GraphRecord | unknown;
+}
 
 type ReadSignal<T> = {
   (): T;
@@ -49,11 +59,20 @@ type NextValue<T> = {
   (prevValue: T): T;
 };
 
-type Dispose = {
-  (): void;
+type SourceMapValue = {
+  value: unknown;
+  graph?: Owner;
 };
 
-type Disposable = {} & Callable;
+type Owner = {
+  owned: ComputationNode<any>[] | null;
+  cleanups: (() => void)[] | null;
+  owner: Owner | null;
+  context: any | null;
+  sourceMap?: Record<string, ComputationNode>;
+  name?: string;
+  componentName?: string;
+};
 
 type Scope = {
   [SCOPE]: Scope | null;
@@ -108,8 +127,10 @@ export {
   Disposable,
   EqualityCheck,
   Func,
+  GraphRecord,
   Maybe,
   MaybeDisposable,
+  Owner,
   ReadSignal,
   Scope,
   SignalList,
@@ -117,6 +138,7 @@ export {
   SignalMemoOptions,
   SignalValue,
   Signal,
+  SourceMapValue,
   Setter,
   WriteSignal,
   NextValue,

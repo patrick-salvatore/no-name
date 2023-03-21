@@ -1,10 +1,9 @@
-import type { Cash, FunctionMaybe } from "~/reactive/render_model/types";
+import type { FunctionMaybe } from "~/reactive/render_model/types";
 import { isArray, isFunction } from "~/reactive/render_model/utils";
 
 import { effect } from "~/reactive/update_model";
-import { $SIGNAL, $TRACKING, lookup } from "~/reactive/update_model/system";
+import { $SIGNAL } from "~/reactive/update_model/system";
 
-import { SYMBOL_UNCACHED } from "../constants";
 import { createText } from "./creators";
 
 const resolveArrays = (() => {
@@ -32,7 +31,7 @@ const resolveArrays = (() => {
 
         hasObservables = inner(value, resolved, hasObservables)[1];
       } else if (type === "function" && value[$SIGNAL]) {
-        // Signal
+        // Signal - preserve executation of signal for wrapping in render effect within resolveChild
 
         if (resolved !== RESOLVED) resolved.push(value);
 
@@ -61,11 +60,10 @@ const resolveChild = <T>(
   setter: Setter<T>,
   _dynamic: boolean = false
 ): void => {
-
   if (isFunction(value)) {
     if (value[$SIGNAL]) {
       effect(
-        () => {
+        function renderEffect() {
           resolveChild(value(), setter, true);
         },
         { name: "render_effect" }

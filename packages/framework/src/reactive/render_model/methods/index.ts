@@ -1,4 +1,7 @@
 import createElement from "./create_element";
-import {Fragment} from "./create_fragment";
+import { Fragment } from "./create_fragment";
 import render from "./render";
-export { render, createElement, Fragment};
+import { ref } from "./ref";
+import { styleList } from "./styleList";
+
+export { styleList, render, ref, createElement, Fragment };
