@@ -2,11 +2,9 @@
   "name": "lnl",
   "private": true,
   "workspaces": [
-    "packages/vanilla",
+    "playground/*",
     "packages/plugin",
-    "packages/playground/*",
-    "packages/framework",
-    "packages/lib"
+    "packages/framework"
   ],
   "devDependencies": {
     "eslint": "^8.33.0",
@@ -18,8 +16,8 @@
     "build:p": "npm run build -w packages/plugin",
     "build:f": "npm run build -w packages/framework",
     "build": "npm run build:f && npm run build:p",
-    "playground:counter": "npm run dev -w packages/playground/counter",
-    "playground:list": "npm run dev -w packages/playground/list",
-    "playground:todo-list": "npm run dev -w packages/playground/todo-list"
+    "playground:counter": "npm run dev -w playground/counter",
+    "playground:list": "npm run dev -w playground/list",
+    "playground:todo-list": "npm run dev -w playground/todo-list"
   }
 }
