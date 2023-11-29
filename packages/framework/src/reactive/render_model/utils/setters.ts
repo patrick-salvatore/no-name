@@ -1,14 +1,14 @@
-import { isFunction, isNil } from "~/reactive/render_model/utils";
+import { isFunction, isNil } from "$/reactive/render_model/utils";
 import {
   createText,
   createComment,
-} from "~/reactive/render_model/utils/creators";
-import CashUtils from "~/reactive/render_model/utils/cashUtil";
-import { resolveChild } from "~/reactive/render_model/utils/resolver";
+} from "$/reactive/render_model/utils/creators";
+import CashUtils from "$/reactive/render_model/utils/cashUtil";
+import { resolveChild } from "$/reactive/render_model/utils/resolver";
 
-import type { Cash, Child } from "~/reactive/render_model/types";
+import type { Cash, Child } from "$/reactive/render_model/types";
 
-import { effect, isSignal, on } from "~/reactive/update_model";
+import { effect, isSignal, on } from "$/reactive/update_model";
 
 import { SYMBOL_UNCACHED } from "../constants";
 

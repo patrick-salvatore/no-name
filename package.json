@@ -3,8 +3,7 @@
   "private": true,
   "workspaces": [
     "playground/*",
-    "packages/plugin",
-    "packages/framework"
+    "packages/*"
   ],
   "devDependencies": {
     "eslint": "^8.33.0",
@@ -13,11 +12,11 @@
   },
   "scripts": {
     "clean": "npx -y rimraf node_modules **/node_modules/ package-lock.json && npm i",
-    "build:p": "npm run build -w packages/plugin",
-    "build:f": "npm run build -w packages/framework",
-    "build": "npm run build:f && npm run build:p",
-    "playground:counter": "npm run dev -w playground/counter",
-    "playground:list": "npm run dev -w playground/list",
-    "playground:todo-list": "npm run dev -w playground/todo-list"
+    "build:p": "yarn workspace @lnl/plugin build",
+    "build:f": "yarn workspace @lnl/framework build",
+    "build": "yarn build:f && yarn build:p",
+    "playground:counter": "yarn @lnl/playground-counter dev",
+    "playground:list": "yarn @lnl/playground-list dev",
+    "playground:todo-list": "yarn @lnl/playground-todo-list dev"
   }
 }

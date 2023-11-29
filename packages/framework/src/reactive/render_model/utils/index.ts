@@ -1,4 +1,4 @@
-import type { Truthy } from "~/reactive/render_model/types";
+import type { Truthy } from "$/reactive/render_model/types";
 
 const { assign } = Object;
 

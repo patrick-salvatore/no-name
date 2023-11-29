@@ -1,8 +1,8 @@
-import type { FunctionMaybe } from "~/reactive/render_model/types";
-import { isArray, isFunction } from "~/reactive/render_model/utils";
+import type { FunctionMaybe } from "$/reactive/render_model/types";
+import { isArray, isFunction } from "$/reactive/render_model/utils";
 
-import { effect } from "~/reactive/update_model";
-import { $SIGNAL } from "~/reactive/update_model/system";
+import { effect } from "$/reactive/update_model";
+import { $SIGNAL } from "$/reactive/update_model/system";
 
 import { createText } from "./creators";
 

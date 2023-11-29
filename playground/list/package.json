@@ -15,7 +15,6 @@
   "license": "MIT",
   "devDependencies": {
     "@lnl/framework": "*",
-    "@lnl/lib": "*",
     "@lnl/plugin": "*",
     "@rollup/plugin-alias": "^4.0.3",
     "vite": "^4.1.4"

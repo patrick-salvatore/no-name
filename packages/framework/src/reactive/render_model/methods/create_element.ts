@@ -1,17 +1,17 @@
-import wrapElement from "~/reactive/render_model/utils/wrap_element";
-import { createHtmlNode } from "~/reactive/render_model/utils/creators";
-import { setChildren, setProp } from "~/reactive/render_model/utils/setters";
+import wrapElement from "$/reactive/render_model/utils/wrap_element";
+import { createHtmlNode } from "$/reactive/render_model/utils/creators";
+import { setChildren, setProp } from "$/reactive/render_model/utils/setters";
 import {
   isFunction,
   isNil,
   isString,
   isNode,
   isVoidChild,
-} from "~/reactive/render_model/utils";
+} from "$/reactive/render_model/utils";
 
-import type { Child, Component, Props } from "~/reactive/render_model/types";
+import type { Child, Component, Props } from "$/reactive/render_model/types";
 
-import { untrack } from "~/reactive/update_model/system";
+import { untrack } from "$/reactive/update_model/system";
 
 // This function is exported from the framework, and manually injected into the bundle in user land.
 // We rely on vite's esbuild feature set, to invoke this function for every JSX tag in the user's app.

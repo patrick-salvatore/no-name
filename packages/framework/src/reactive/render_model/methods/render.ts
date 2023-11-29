@@ -1,7 +1,7 @@
-import type { Child } from "~/reactive/render_model/types";
+import type { Child } from "$/reactive/render_model/types";
 
-import { setChildren } from "~/reactive/render_model/utils/setters";
-import { root } from "~/reactive/update_model";
+import { setChildren } from "$/reactive/render_model/utils/setters";
+import { root } from "$/reactive/update_model";
 
 // "entry point" for app. This functions takes a Html root element, and the app component.
 const render = (component: Child, parent: Element) => {
